@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(-45deg, bisque, orange, bisque, orange);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 50% 100%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .calculator {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    #result {
+      width: 100%;
+      height: 50px;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      text-align: right;
+      padding: 10px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .buttons button {
+      width: 60px;
+      height: 60px;
+      font-size: 1.2em;
+      margin: 5px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .buttons button:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.05);
+    }
+
+    .history {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-x: auto;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+
+    .history h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1em; 
+    }
+
+    #history-list {
+      list-style: none;
+      padding-left: 0;
+      font-size: 0.9em;
+    }
+
+    .history button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .history button:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="result" readonly>
+    <div class="buttons">
+      <button onclick="clearResult()">C</button>
+      <button onclick="deleteLast()">←</button>
+      <button onclick="appendValue('(')">(</button>
+      <button onclick="appendValue(')')">)</button><br>
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button onclick="appendValue('/')">÷</button><br>
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button onclick="appendValue('*')">×</button><br>
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button onclick="appendValue('-')">−</button><br>
+      <button onclick="appendValue('0')">0</button>
+      <button onclick="appendValue('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="appendValue('+')">+</button>
+    </div>
+
+    <div class="history">
+      <h3>History</h3>
+      <button onclick="clearHistory()">Clear History</button>
+      <ul id="history-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    let history = [];
+
+    function appendValue(val) {
+      const resultInput = document.getElementById("result");
+      resultInput.value = removeDots(resultInput.value) + val;
+    }
+
+    function clearResult() {
+      document.getElementById("result").value = "";
+    }
+
+    function deleteLast() {
+      const resultInput = document.getElementById("result");
+      const raw = removeDots(resultInput.value);
+      resultInput.value = formatNumber(raw.slice(0, -1));
+    }
+
+    function calculate() {
+      const inputField = document.getElementById("result");
+      const inputRaw = removeDots(inputField.value);
+
+      try {
+        const result = eval(inputRaw);
+        const formatted = formatNumber(result);
+        inputField.value = formatted;
+
+        const entry = inputRaw + " = " + formatted;
+        history.push(entry);
+        updateHistory();
+      } catch (e) {
+        alert("Geçersiz işlem!");
+      }
+    }
+
+    function formatNumber(num) {
+      const number = Number(num);
+      if (isNaN(number)) return num;
+      return number.toLocaleString('tr-TR');
+    }
+
+    function removeDots(str) {
+      return str.replace(/\./g, '');
+    }
+
+    function updateHistory() {
+      const list = document.getElementById("history-list");
+      list.innerHTML = "";
+      for (let i = history.length - 1; i >= 0; i--) {
+        const li = document.createElement("li");
+        li.textContent = history[i];
+        list.appendChild(li);
+      }
+    }
+
+    function clearHistory() {
+      history = [];
+      updateHistory();
+    }
+  </script>
+</body>
+</html>
