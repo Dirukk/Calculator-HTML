@@ -17,15 +17,9 @@
     }
 
     @keyframes gradientMove {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 50% 100%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 50% 100%; }
+      100% { background-position: 0% 50%; }
     }
 
     .calculator {
@@ -103,14 +97,23 @@
     .history button:hover {
       background-color: #c0392b;
     }
+
+    a {
+      color: black;
+      border: 1px solid white;
+      border-radius: 10px;
+      padding: 7px 7px;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
   </style>
 </head>
 <body>
   <div class="calculator">
     <input type="text" id="result" readonly>
     <div class="buttons">
-      <button onclick="clearResult()">C</button>
-      <button onclick="deleteLast()">←</button>
+      <button onclick="clearResult()">AC</button>
+      <button onclick="deleteLast()"><--</button>
       <button onclick="appendValue('(')">(</button>
       <button onclick="appendValue(')')">)</button><br>
       <button onclick="appendValue('7')">7</button>
@@ -137,10 +140,18 @@
       <ul id="history-list"></ul>
     </div>
   </div>
-  <p>By Dirukk</p>
+  <a href="https://github.com/Dirukk">By Dirukk<br>On Github<br>(Click To Go Github)</a>
 
   <script>
     let history = [];
+
+    window.onload = function () {
+      const saved = localStorage.getItem("calcHistory");
+      if (saved) {
+        history = JSON.parse(saved);
+        updateHistory();
+      }
+    };
 
     function appendValue(val) {
       const resultInput = document.getElementById("result");
@@ -168,6 +179,7 @@
 
         const entry = inputRaw + " = " + formatted;
         history.push(entry);
+        localStorage.setItem("calcHistory", JSON.stringify(history));
         updateHistory();
       } catch (e) {
         alert("Geçersiz işlem!");
@@ -196,6 +208,7 @@
 
     function clearHistory() {
       history = [];
+      localStorage.removeItem("calcHistory");
       updateHistory();
     }
   </script>
